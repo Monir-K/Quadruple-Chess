@@ -18,6 +18,16 @@
             --stage-bottom-padding: 70px;
         }
 
+        html.mobile-mode {
+            --square-size: 44px;
+            --board-gap: 3px;
+            --board-padding: 8px;
+            --container-padding: 12px;
+            --stage-top-padding: 12px;
+            --stage-side-padding: 10px;
+            --stage-bottom-padding: 12px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -36,6 +46,41 @@
             min-height: 100vh;
             padding: 4px;
             overflow: hidden;
+        }
+
+        html.mobile-mode body {
+            grid-template-columns: 1.4fr 1fr;
+            grid-template-rows: auto 1fr;
+            padding: 6px;
+        }
+
+        html.mobile-mode .sidebar {
+            display: block;
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        html.mobile-mode .game-shell {
+            display: block;
+        }
+
+        html.mobile-mode .board-stage {
+            width: 100%;
+            grid-column: 1;
+        }
+
+        html.mobile-mode .controls {
+            grid-column: 2;
+            grid-row: 2;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 8px;
+        }
+
+        html.mobile-mode .sidebar-flag img {
+            max-width: 140px;
         }
 
         .header {
@@ -111,6 +156,11 @@
             box-shadow: 0 0 60px #00000099;
         }
 
+        html.mobile-mode .board-container {
+            border-radius: 14px;
+            box-shadow: 0 0 30px #00000066;
+        }
+
         .game-shell {
             display: contents;
         }
@@ -122,6 +172,11 @@
             width: max-content;
             margin: auto;
             padding: 0;
+        }
+
+        html.mobile-mode .board-stage {
+            grid-row: 2;
+            margin: 0 auto;
         }
 
         .player-nameplates {
@@ -208,6 +263,10 @@
             border-radius: 16px;
         }
 
+        html.mobile-mode #board {
+            grid-template-columns: repeat(16, var(--square-size));
+        }
+
         .square {
             width: var(--square-size);
             height: var(--square-size);
@@ -221,6 +280,11 @@
             border-radius: 6px;
             box-shadow: inset 0 4px 8px rgba(255, 255, 255, 0.2),
                 inset 0 -4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        html.mobile-mode .square {
+            font-size: calc(var(--square-size) * 0.78);
+            border-radius: 4px;
         }
 
         .square.light {
@@ -377,13 +441,12 @@
         .square .piece.zombie-pawn::before {
             content: '🧟';
             position: absolute;
-            top: 15%;
+            top: 16%;
             left: 50%;
-            font-size: 0.4em;
+            font-size: 0.7em;
             transform: translateX(-50%);
             filter: drop-shadow(1px 1px 1px #000);
             opacity: 0.9;
-            z-index: 11;
         }
 
         .controls {
@@ -393,6 +456,13 @@
             flex-direction: column;
             gap: 10px;
             margin-top: 0;
+        }
+
+        html.mobile-mode .controls {
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
         }
 
         button {
@@ -417,6 +487,11 @@
             box-shadow: 0 4px 0 #00000066;
         }
 
+        html.mobile-mode button {
+            padding: 12px 14px;
+            font-size: 0.9rem;
+        }
+
         .undo-btn {
             background: #ff8800;
         }
@@ -431,26 +506,10 @@
         }
 
         .fullscreen-btn {
-            background: #333;
-            color: #ccc;
-            font-weight: normal;
-            font-size: 0.75rem;
-            padding: 4px 8px;
-            width: auto;
-            border-radius: 4px;
-            box-shadow: 0 2px 0 #000;
-        }
-
-        .fullscreen-btn:hover {
-            background: #444;
-        }
-
-        .fullscreen-btn.fullscreen-on {
-            background: #ff4444;
-        }
-
-        .fullscreen-btn.fullscreen-on:hover {
-            background: #dd3333;
+            background: #39ff14;
+            color: #000;
+            font-weight: bold;
+            width: 100%;
         }
 
         .sidebar {
@@ -513,6 +572,11 @@
             filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.35));
         }
 
+        .ghosted {
+            opacity: 0.35;
+            filter: grayscale(1);
+        }
+
         .modal,
         .elim-modal,
         .win-overlay,
@@ -537,6 +601,10 @@
             box-shadow: 0 0 60px #39ff1488;
             max-width: 520px;
             width: 90%;
+        }
+
+        .elim-content {
+            background: rgba(26, 26, 46, 0.78);
         }
 
         .setup-grid {
@@ -575,6 +643,11 @@
             overflow-y: auto;
             text-align: left;
             font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+        }
+
+        @keyframes donateBlink {
+            0%, 25%, 100% { box-shadow: 0 0 30px 12px rgba(255, 80, 80, 0.4); }
+            50% { box-shadow: 0 0 14px 5px rgba(255, 80, 80, 0.25); }
         }
 
         .info-modal h2 {
@@ -895,10 +968,11 @@
     </div>
 
     <div class="controls">
-        <button id="pause-btn" class="pause-btn">PAUSE</button>
-        <button id="end-btn" style="background: #ff4444 !important;">❌ END GAME</button>
-        <button id="restart-btn">RESTART</button>
-        <button id="rules-btn">RULES</button>
+        <button id="pause-btn" class="pause-btn" title="Pause/Resume">&#9199;</button>
+        <button id="end-btn" style="background:#ff4444 !important;" title="End Game">&#10006;</button>
+        <button id="restart-btn" title="Restart">&#8634;</button>
+        <button id="pc-mode-btn" onclick="setDisplayMode('pc')" title="PC Layout">&#128187;</button>
+        <button id="mobile-mode-btn" onclick="setDisplayMode('mobile')" title="Mobile Layout">&#128241;</button>
     </div>
 
     <!-- SETUP MODAL -->
@@ -906,10 +980,14 @@
         <div class="setup-content">
             <h2>GAME SETUP</h2>
 
-            <div style="margin:25px 0;text-align:left;">
-                <label>Total time per player (minutes):</label><br>
-                <input id="time-input" type="number" value="10" min="1" max="60"
-                    style="font-size:2rem;padding:10px;width:120px;text-align:center;background:#16213e;color:#39ff14;border:none;border-radius:8px;">
+            <div style="margin:25px 0;display:flex;align-items:flex-end;gap:20px;flex-wrap:wrap;">
+                <div style="text-align:left;">
+                    <label>Total time per player (minutes):</label><br>
+                    <input id="time-input" type="number" value="10" min="1" max="60"
+                        style="font-size:2rem;padding:10px;width:120px;text-align:center;background:#16213e;color:#39ff14;border:none;border-radius:8px;">
+                </div>
+                <button onclick="openInfoModal('donate-modal')"
+                    style="padding:8px 12px;font-size:0.9rem;background:#ffcc00;color:#000;font-weight:bold;border-radius:10px;box-shadow:0 5px 0 #00000055;margin-left:10px;">DONATE OPTIONS</button>
             </div>
 
             <div style="margin:25px 0;text-align:left;">
@@ -918,8 +996,8 @@
                     <div class="setup-player-row">
                         <input id="name-0" class="setup-input" value="GREEN" style="color:#00ff88;">
                         <select id="type-0" class="setup-select" style="color:#00ff88;">
-                            <option value="human" selected>Human</option>
-                            <option value="ai">AI</option>
+                            <option value="human">Human</option>
+                            <option value="ai" selected>AI</option>
                         </select>
                     </div>
                     <div class="setup-player-row">
@@ -932,8 +1010,8 @@
                     <div class="setup-player-row">
                         <input id="name-2" class="setup-input" value="RED" style="color:#ff6666;">
                         <select id="type-2" class="setup-select" style="color:#ff6666;">
-                            <option value="human">Human</option>
-                            <option value="ai" selected>AI</option>
+                            <option value="human" selected>Human</option>
+                            <option value="ai">AI</option>
                         </select>
                     </div>
                     <div class="setup-player-row">
@@ -950,12 +1028,19 @@
                 <label><input id="sound-toggle" type="checkbox" checked> Sound On</label>
             </div>
 
-            <button onclick="startGameWithSetup()"
+            <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:18px 0;">
+                <button id="pc-mode-btn" onclick="setDisplayMode('pc')"
+                    style="padding:12px 22px;background:#4da6ff;color:#fff;font-weight:bold;border-radius:10px;box-shadow:0 6px 0 #00000055;">PC MODE</button>
+                <button id="mobile-mode-btn" onclick="setDisplayMode('mobile')"
+                    style="padding:12px 22px;background:#ff8c00;color:#fff;font-weight:bold;border-radius:10px;box-shadow:0 6px 0 #00000055;">MOBILE MODE</button>
+            </div>
+
+            <button onclick="requestPlayFullscreen(); startGameWithSetup()"
                 style="padding:18px 50px;font-size:1.3rem;background:#39ff14;color:#000;margin-top:20px;">START
                 GAME</button>
             <div class="info-actions">
-                <button onclick="openInfoModal('rules-modal')">VIEW RULES</button>
-                <button onclick="openInfoModal('about-modal')">ABOUT THE GAME</button>
+                <button onclick="openInfoModal('rules-modal')" style="background:#4da6ff;color:#fff;">VIEW RULES</button>
+                <button onclick="openInfoModal('about-modal')" style="background:#4da6ff;color:#fff;">ABOUT THE GAME</button>
             </div>
             <div class="setup-credit">Developed by Monir Kamjo</div>
         </div>
@@ -973,7 +1058,7 @@
     <div id="elim-modal" class="elim-modal">
         <div class="elim-content">
             <h2 id="elim-title" style="color:#ff4444">BLUE IS CHECKMATED!</h2>
-            <div id="elim-countdown" class="countdown">10</div>
+            <div id="elim-countdown" class="countdown">3</div>
             <p id="elim-subtitle" style="margin-top:10px;color:#ccc">Pieces will be removed in</p>
         </div>
     </div>
@@ -1024,6 +1109,23 @@
             <div class="info-actions">
                 <button onclick="closeInfoModal('rules-modal')">CLOSE</button>
             </div>
+        </div>
+    </div>
+
+    <div id="donate-modal" class="modal">
+        <div class="modal-content info-modal" style="max-width:680px;text-align:left;box-shadow:0 0 30px 12px rgba(255,80,80,0.35);border:1px solid #ff6666;animation:donateBlink 3s ease-in-out infinite;">
+            <h2>Support M. Khudabakhsh & Family</h2>
+            <p style="margin-bottom:10px;">M. Khudabakhsh is a widowed former military officer. Her late husband was a doctor. She has no parents, siblings, or cousins to lean on. She is currently hidden somewhere in Afghanistan for safety, raising three children (ages 7–11). We have supported her since 2022, but resources are running low. Your contribution keeps them fed, housed, and in school.</p>
+            <div style="display:flex;flex-direction:column;gap:10px;margin:18px 0;">
+                <button onclick="showDonateMessage('PIX details will be posted here soon.')" style="background:#39ff14;color:#000;">Donate via PIX</button>
+                <button onclick="showDonateMessage('PayPal link will be posted here soon.')" style="background:#0070ba;">Donate via PayPal</button>
+                <button onclick="showDonateMessage('PicPay link will be posted here soon.')" style="background:#00c853;">Donate via PicPay</button>
+                <button onclick="window.open('https://wa.me/11958465794','_blank');" style="background:#25d366;border-radius:999px;color:#fff;font-weight:bold;display:flex;align-items:center;justify-content:center;gap:8px;">
+                    <span style="font-size:1.2rem;">📞</span> WhatsApp the Developer
+                </button>
+            </div>
+            <div id="donate-message" style="min-height:40px;margin-top:4px;color:#ffdede;font-weight:bold;"></div>
+            <button onclick="closeInfoModal('donate-modal')" style="margin-top:10px;background:#ff5555;">Close</button>
         </div>
     </div>
 
@@ -1125,6 +1227,13 @@
             notes.forEach((freq, index) => playTone(freq, 0.09, 'triangle', 0.026, index * 0.045));
         }
 
+        function showDonateMessage(msg) {
+            const box = document.getElementById('donate-message');
+            if (box) {
+                box.textContent = msg;
+            }
+        }
+
         function playCaptureSoundForPiece(piece, captured) {
             playTone(160, 0.09, 'square', 0.032);
             playTone(120, 0.12, 'sawtooth', 0.024, 0.035);
@@ -1180,6 +1289,7 @@
         let candidateMoves = [], legalMoves = [], history = [];
         let gameOver = false, captures = [0, 0, 0, 0], announcements = [];
         let remainingTime = [];
+        let grayPlayer = null, grayUntil = 0;
         let turnStartTime = 0;
         let timerInterval = null;
         let elimInterval = null;
@@ -1527,15 +1637,19 @@
                     }
 
                     const piece = board[r][c];
-                    if (piece) {
-                        const span = document.createElement('span');
-                        span.className = `piece piece-${piece.type}`;
-                        if (piece.type === 'pawn' && piece.isZombie) span.classList.add('zombie-pawn');
-                        span.textContent = unicodeMap[piece.type];
-                        span.dataset.glyph = unicodeMap[piece.type];
-                        span.style.color = players[piece.player].pieceColor;
-                        sq.appendChild(span);
-                    }
+                        if (piece) {
+                            const span = document.createElement('span');
+                            let cls = `piece piece-${piece.type}`;
+                            if (piece.type === 'pawn' && piece.isZombie) span.classList.add('zombie-pawn');
+                            span.textContent = unicodeMap[piece.type];
+                            span.dataset.glyph = unicodeMap[piece.type];
+                            span.style.color = players[piece.player].pieceColor;
+                            if (grayPlayer !== null && piece.player === grayPlayer && Date.now() < grayUntil) {
+                                cls += ' ghosted';
+                            }
+                            span.className = cls;
+                            sq.appendChild(span);
+                        }
 
                     sq.addEventListener('click', handleClick);
                     sq.addEventListener('dragstart', e => { if (piece && piece.player === currentPlayer && !paused) e.dataTransfer.setData('text', `${r},${c}`); });
@@ -1807,24 +1921,35 @@
             const countdownEl = document.getElementById('elim-countdown');
             const subtitle = document.getElementById('elim-subtitle');
 
-            title.textContent = `${players[player].name} IS ${reason === 'checkmate' ? 'CHECKMATED!' : 'OUT OF TIME!'}`;
-            subtitle.textContent = reason === 'checkmate' ? 'Pieces will be removed in' : 'Time expired – pieces will be removed in';
-
-            let count = 10;
-            countdownEl.textContent = count;
-
-            if (elimInterval) clearInterval(elimInterval);
-            elimInterval = setInterval(() => {
-                count--;
+            const startCountdown = () => {
+                title.textContent = `${players[player].name} ${reason === 'checkmate' ? 'CHECKMATED!' : 'OUT OF TIME!'}`;
+                subtitle.textContent = 'Pieces will be removed in';
+                playEliminationSound(reason);
+                let count = 3;
                 countdownEl.textContent = count;
-                if (count <= 0) {
-                    clearInterval(elimInterval);
-                    modal.style.display = 'none';
-                    eliminatePlayer(player);
-                }
-            }, 1000);
+                if (elimInterval) clearInterval(elimInterval);
+                elimInterval = setInterval(() => {
+                    count--;
+                    countdownEl.textContent = count;
+                    if (count <= 0) {
+                        clearInterval(elimInterval);
+                        modal.style.display = 'none';
+                        grayPlayer = null;
+                        eliminatePlayer(player);
+                    }
+                }, 1000);
+                modal.style.display = 'flex';
+            };
 
-            modal.style.display = 'flex';
+            if (reason === 'checkmate') {
+                grayPlayer = player;
+                grayUntil = Date.now() + 3000;
+                renderBoard();
+                setTimeout(startCountdown, 3000);
+            } else {
+                grayPlayer = null;
+                startCountdown();
+            }
         }
 
         function eliminatePlayer(player) {
@@ -1860,7 +1985,7 @@
                 });
                 const keep = document.createElement('div');
                 keep.className = 'promo-btn';
-                keep.style.fontSize = '2.5rem';
+                keep.style.fontSize = '1.5rem';
                 keep.textContent = `${unicodeMap.pawn} KEEP`;
                 keep.style.color = players[currentPlayer].pieceColor;
                 keep.onclick = () => { modal.style.display = 'none'; renderBoard(); checkForEliminations(); nextTurn(); };
@@ -2060,6 +2185,7 @@
         }
 
         function startGameWithSetup() {
+            requestPlayFullscreen();
             const timeMin = parseInt(document.getElementById('time-input').value) || 10;
             const total = timeMin * 60;
             remainingTime = Array(4).fill(total);
@@ -2130,21 +2256,15 @@
         }
 
         function toggleFullscreen() {
-            const button = document.getElementById('fullscreen-btn');
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen();
-                button.textContent = '⟗';
-                button.classList.add('fullscreen-on');
-            } else {
-                document.exitFullscreen();
-                button.textContent = '⟖';
-                button.classList.remove('fullscreen-on');
             }
+            const button = document.getElementById('fullscreen-btn');
+            if (button) button.textContent = document.fullscreenElement ? '⛶ EXIT FULLSCREEN' : '⛶ ENTER FULLSCREEN';
         }
 
         // Auto fullscreen on any click/touch
-        document.addEventListener('click', toggleFullscreen, { once: true, passive: true });
-        document.addEventListener('touchstart', toggleFullscreen, { once: true, passive: true });
+        // removed auto-toggle listeners to avoid unintended exit/enter loop
 
         function openInfoModal(id) {
             const modal = document.getElementById(id);
@@ -2160,8 +2280,8 @@
             document.getElementById('pause-btn').onclick = togglePause;
             document.getElementById('end-btn').onclick = () => { if (confirm('End game?')) restartGame(); };
             document.getElementById('restart-btn').onclick = restartGame;
-            document.getElementById('fullscreen-btn').onclick = toggleFullscreen;
-            document.getElementById('rules-btn').onclick = () => openInfoModal('rules-modal');
+            const fsBtn = document.getElementById('fullscreen-btn');
+            if (fsBtn) fsBtn.onclick = toggleFullscreen;
         }
 
         function formatTime(totalSeconds) {
@@ -2328,7 +2448,7 @@
                 });
                 const keep = document.createElement('div');
                 keep.className = 'promo-btn';
-                keep.style.fontSize = '2.5rem';
+                keep.style.fontSize = '1.5rem';
                 keep.textContent = `${unicodeMap.pawn} KEEP`;
                 keep.style.color = players[currentPlayer].pieceColor;
                 keep.onclick = () => {
@@ -2400,47 +2520,41 @@
             }
         }
 
-        function eliminationCountdown(player, reason) {
-            gameOver = true;
-            paused = false;
-            updatePauseButton();
-            if (timerInterval) clearInterval(timerInterval);
-            if (aiTimeout) clearTimeout(aiTimeout);
-            const modal = document.getElementById('elim-modal');
-            const title = document.getElementById('elim-title');
-            const countdownEl = document.getElementById('elim-countdown');
-            const subtitle = document.getElementById('elim-subtitle');
-
-            title.textContent = `${players[player].name} IS ${reason === 'checkmate' ? 'CHECKMATED!' : 'OUT OF TIME!'}`;
-            subtitle.textContent = reason === 'checkmate' ? 'Pieces will be removed in' : 'Time expired - pieces will be removed in';
-            playEliminationSound(reason);
-
-            let count = 10;
-            countdownEl.textContent = count;
-
-            if (elimInterval) clearInterval(elimInterval);
-            elimInterval = setInterval(() => {
-                count--;
-                countdownEl.textContent = count;
-                if (count <= 0) {
-                    clearInterval(elimInterval);
-                    modal.style.display = 'none';
-                    eliminatePlayer(player);
-                }
-            }, 1000);
-
-            modal.style.display = 'flex';
-        }
-
         function toggleFullscreen() {
             const button = document.getElementById('fullscreen-btn');
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen();
-                button.textContent = 'FULLSCREEN: ON';
+                document.documentElement.requestFullscreen().catch(() => { });
+                if (button) button.textContent = 'FULLSCREEN: ON';
             } else {
                 document.exitFullscreen();
-                button.textContent = 'FULLSCREEN: OFF';
+                if (button) button.textContent = 'FULLSCREEN: OFF';
             }
+        }
+
+        function requestPlayFullscreen() {
+            if (!document.fullscreenElement && document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(() => { });
+            }
+        }
+
+        function setDisplayMode(mode) {
+            const root = document.documentElement;
+            const pcBtns = document.querySelectorAll('#pc-mode-btn');
+            const mobileBtns = document.querySelectorAll('#mobile-mode-btn');
+            if (mode === 'mobile') {
+                if (!window.__rotationPrompted) {
+                    alert('For the best mobile layout, please enable screen rotation, then continue.');
+                    window.__rotationPrompted = true;
+                }
+                root.classList.add('mobile-mode');
+                mobileBtns.forEach(btn => { btn.style.background = '#39ff14'; btn.style.color = '#000'; });
+                pcBtns.forEach(btn => { btn.style.background = '#4da6ff'; btn.style.color = '#fff'; });
+            } else {
+                root.classList.remove('mobile-mode');
+                pcBtns.forEach(btn => { btn.style.background = '#4da6ff'; btn.style.color = '#fff'; });
+                mobileBtns.forEach(btn => { btn.style.background = '#ff8c00'; btn.style.color = '#fff'; });
+            }
+            updateResponsiveLayout();
         }
 
         function updateResponsiveLayout() {
@@ -2496,12 +2610,17 @@
             updateResponsiveLayout();
             document.getElementById('fullscreen-btn').textContent = 'FULLSCREEN: OFF';
             document.getElementById('setup-modal').style.display = 'flex';
+            if (window.innerWidth <= 900) setDisplayMode('mobile'); else setDisplayMode('pc');
+            requestPlayFullscreen();
         }
 
         window.addEventListener('resize', updateResponsiveLayout);
         document.addEventListener('fullscreenchange', updateResponsiveLayout);
+        document.addEventListener('touchstart', requestPlayFullscreen, { passive: true });
+        document.addEventListener('mousedown', requestPlayFullscreen, { passive: true });
         window.onload = startGame;
     </script>
 </body>
 
 </html>
+
